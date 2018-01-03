@@ -1,0 +1,32 @@
+{
+  "development": {
+    "username": "root",
+    "password": "k13111996",
+    "database": "chat",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "define": {
+      "timestamps": false
+  }
+  },
+  "test": {
+    "username": "root",
+    "password": "k13111996",
+    "database": "chat",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "define": {
+      "timestamps": false
+  }
+  },
+  "production": {
+    "username": "root",
+    "password": "k13111996",
+    "database": "chat",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "define": {
+      "timestamps": false
+  }
+  }
+}
