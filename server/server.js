@@ -8,15 +8,34 @@ const {generateMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
 const {Users} = require('./utils/users');
 
-const publicPath = path.join(__dirname, '/../public/');
+const publicPath = path.join(__dirname, '/../public');
 const port = process.env.PORT || 3000;
 
+
 var app = express();
+var authRoute = require(publicPath + '/js/authrouter')(app);
+
 var server = http.createServer(app);
 var io = socketIO(server);
+var passport = require('passport');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var env = require('dotenv').load();
+var exphbs = require('express-handlebars');
 var users = new Users();
 
+// for Express
 app.use(express.static(publicPath));
+
+// for BodyParser
+app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.json());
+
+// for Passport
+app.use(session({ secret: 'keyboard cat', resave: true, saveUninitialized: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 io.on('connection', (socket)=>{
     //console.log("New user connected");
     // models.users.findAll().then(function(users){
