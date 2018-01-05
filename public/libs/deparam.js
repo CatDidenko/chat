@@ -7,7 +7,7 @@
 (function($){
     $.deparam = $.deparam || function(uri){
       if(uri === undefined){
-        uri = window.location.search;
+        uri = window.location.pathname;
       }
       var queryString = {};
       uri.replace(

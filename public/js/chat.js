@@ -1,4 +1,5 @@
 var socket = io();
+var models = require('/../models/index');
 
 function scrollToBottom(){
     var messages = jQuery('#messages');
@@ -14,8 +15,11 @@ function scrollToBottom(){
     }
 }
 socket.on('connect', function(){
-var params = jQuery.deparam(window.location.search);
-socket.emit('join', params, function(err){
+
+console.log(models);
+var room_id = (window.location.pathname.split('/')).pop();
+
+socket.emit('join', room_id, function(err){
     if(err){
         alert(err);
         window.location.href = '/';
@@ -28,27 +32,30 @@ socket.on('disconnect', function(){
     console.log('Disconnected from server');
 });
 
-socket.on('updateUserList', function(users){
-    var ul = jQuery('<ul></ul>');
+// socket.on('updateUserList', function(users){
+//     var ul = jQuery('<ul></ul>');
 
-    users.forEach(function(user){
-        ul.append(jQuery('<li></li>').text(user));
-    });
+//     users.forEach(function(user){
+//         ul.append(jQuery('<li></li>').text(user));
+//     });
 
-    jQuery('#users').html(ul);
-});
+//     jQuery('#users').html(ul);
+// });
 
 socket.on('newMessage', function(message){
+   
     var formattedTime = moment(message.createdAt).format('h:mm a MMM Do, YYYY');
-    var template = jQuery('#message-template').html();
-    var html = Mustache.render(template, {
-        from: message.from,
-        text: message.text,
-        createAt: formattedTime
-    });
+   
+    // console.log(template);
+    // var html = Mustache.render(template, {
+    //     text: message.text,
+    //     createAt: formattedTime
+    // });
 
-    jQuery('#messages').append(html);
-    scrollToBottom();
+    //jQuery('#messages').append(html);
+
+    //console.log(jQuery('#messages').html());
+    //scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function(e){
@@ -57,7 +64,6 @@ jQuery('#message-form').on('submit', function(e){
     var messageTextbox = jQuery('[name=message]');
 
     socket.emit('createMessage', {
-        from: "User",
         text: messageTextbox.val()
     }, function(){
         messageTextbox.val('');

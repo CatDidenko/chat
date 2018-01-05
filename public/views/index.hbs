@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Main</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        #createRoom{
+            margin-left: 80%;
+        }
+    </style>
+</head>
+<body class="chat">
+    <div class="chat__sidebar"> 
+        <h3>Rooms</h3>
+        <div id="rooms">
+            <ol>
+            {{#each rooms}}
+            <li><a href="/chat/{{id}}">{{name}}</a></li>
+            {{/each}}
+            </ol>
+        </div>
+    </div>
+    <div class="message">
+            <div class="message__body">
+                <p>Hello, {{username}}</p>
+            </div>
+    </div>
+    <div>
+        <div id="createRoom">
+            <a href="/create_chat"><button>Create new chat</button></a>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../libs/jquery-3.2.1.min.js"></script>
+    <script src="../libs/mustache.js"></script>
+    <script src="../js/index.js"></script>
+</body>
+</html>
