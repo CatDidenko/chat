@@ -1,5 +1,4 @@
 var socket = io();
-var models = require('/../models/index');
 
 function scrollToBottom(){
     var messages = jQuery('#messages');
@@ -15,8 +14,6 @@ function scrollToBottom(){
     }
 }
 socket.on('connect', function(){
-
-console.log(models);
 var room_id = (window.location.pathname.split('/')).pop();
 
 socket.emit('join', room_id, function(err){
@@ -32,38 +29,38 @@ socket.on('disconnect', function(){
     console.log('Disconnected from server');
 });
 
-// socket.on('updateUserList', function(users){
-//     var ul = jQuery('<ul></ul>');
+socket.on('updateUserList', function(users){
+    var ul = jQuery('<ul></ul>');
 
-//     users.forEach(function(user){
-//         ul.append(jQuery('<li></li>').text(user));
-//     });
+    users.forEach(function(user){
+        ul.append(jQuery('<li></li>').text(user.login));
+    });
 
-//     jQuery('#users').html(ul);
-// });
+    jQuery('#users').html(ul);
+});
 
 socket.on('newMessage', function(message){
    
     var formattedTime = moment(message.createdAt).format('h:mm a MMM Do, YYYY');
-   
-    // console.log(template);
-    // var html = Mustache.render(template, {
-    //     text: message.text,
-    //     createAt: formattedTime
-    // });
+    var source = jQuery('#message-template').html();
+    var template = Handlebars.compile(source);
+    var data = {
+        text: message.text,
+        createdAt: formattedTime
+    };
 
-    //jQuery('#messages').append(html);
-
-    //console.log(jQuery('#messages').html());
-    //scrollToBottom();
+    var html = template(data);
+    jQuery('#messages').append(html);
 });
 
 jQuery('#message-form').on('submit', function(e){
     e.preventDefault();
 
+    var room_id = (window.location.pathname.split('/')).pop();
     var messageTextbox = jQuery('[name=message]');
 
     socket.emit('createMessage', {
+        room_id: room_id,
         text: messageTextbox.val()
     }, function(){
         messageTextbox.val('');

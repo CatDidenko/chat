@@ -10,17 +10,22 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-  }, {
-    classMethods: {
-      associate: function(models) {
-        users.hasMany(models.messages, { foreignKey: 'author_id'});
-        users.hasMany(models.rooms, { foreignKey: 'owner_id'});
-        users.hasMany(model.rooms, {through: 'users_rooms', foreignKey: 'user_id'});
-      }
-    }
-  },
+   }, //{
+  //   classMethods: {
+  //     associate: function(models) {
+  //       users.hasMany(models.messages, { foreignKey: 'author_id'});
+  //       users.hasMany(models.rooms, { foreignKey: 'owner_id'});
+  //       users.belongsToMany(model.rooms, {through: 'UsersRooms'});
+  //     }
+  //   }
+  // },
 {
   timestamps: false
 });
+users.associate = function(models){
+  users.hasMany(models.messages, { foreignKey: 'author_id'});
+        users.hasMany(models.rooms, { foreignKey: 'owner_id'});
+         users.belongsToMany(models.rooms, {through: 'UsersRooms', as: 'Chat'});
+};
   return users;
 };

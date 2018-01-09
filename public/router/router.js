@@ -9,16 +9,26 @@ module.exports = function(app, models){
             name: req.body.room,
             owner_id: req.user.id
         }).then(function(rooms){
+            //rooms.setUsers([req.user.id]);
             res.redirect('/');
     });
     });
 
     app.get('/chat/:id', (req, res) => {
-        messages.findAll().then(function(messages){
-            res.render('chat', {
-            messages: messages
+        // models.users.findAll({
+        //     include: [{
+        //         model: models.rooms,
+        //         //through: {
+        //             where: {id: req.params.id}
+        //         //} 
+        //     }]
+        // }).then(function(users){
+            models.messages.findAll().then(function(messages){
+                res.render('chat', {
+                messages: messages,
+                //users: users
+            })
         });
+   // });
     });
-    });
-
 }

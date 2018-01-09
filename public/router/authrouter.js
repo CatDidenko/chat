@@ -8,6 +8,10 @@ module.exports = function(app, passport, rooms){
 
     app.get('/', isLoggedIn, (req, res)=> {
         rooms.findAll().then(function(rooms){
+            req.session.user = {
+                id: req.user.id,
+                login: req.user.login
+            };
             res.render('index', {
             username: req.user.login,
             rooms: rooms
