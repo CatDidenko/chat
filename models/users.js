@@ -10,15 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-   }, //{
-  //   classMethods: {
-  //     associate: function(models) {
-  //       users.hasMany(models.messages, { foreignKey: 'author_id'});
-  //       users.hasMany(models.rooms, { foreignKey: 'owner_id'});
-  //       users.belongsToMany(model.rooms, {through: 'UsersRooms'});
-  //     }
-  //   }
-  // },
+   },
 {
   timestamps: false
 });

@@ -1,4 +1,5 @@
 var chatController = require('../controllers/chatcontroller');
+var {helpers} = require('../helpers/helpers');
 
 module.exports = function(app, models){
 
@@ -9,26 +10,24 @@ module.exports = function(app, models){
             name: req.body.room,
             owner_id: req.user.id
         }).then(function(rooms){
-            //rooms.setUsers([req.user.id]);
             res.redirect('/');
     });
     });
 
     app.get('/chat/:id', (req, res) => {
-        // models.users.findAll({
-        //     include: [{
-        //         model: models.rooms,
-        //         //through: {
-        //             where: {id: req.params.id}
-        //         //} 
-        //     }]
-        // }).then(function(users){
-            models.messages.findAll().then(function(messages){
+        models.messages.findAll({
+            where: {
+                room_id: req.params.id,
+            }
+        }).then(function(messages){
+            models.rooms.findById(req.params.id).then(function(chat){
                 res.render('chat', {
-                messages: messages,
-                //users: users
+                    delete: helpers.delete(chat.owner_id, req.user.id),
+                    chat_id: req.params.id,
+                    user_id: req.user.id,
+                    messages: messages,
             })
-        });
-   // });
+        })
+    });
     });
 }

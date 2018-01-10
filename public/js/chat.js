@@ -22,21 +22,12 @@ socket.emit('join', room_id, function(err){
         window.location.href = '/';
     } else {
          console.log('No errors');
+         socket.emit('updateUserList', room_id);
     }
 });
 });
 socket.on('disconnect', function(){
     console.log('Disconnected from server');
-});
-
-socket.on('updateUserList', function(users){
-    var ul = jQuery('<ul></ul>');
-
-    users.forEach(function(user){
-        ul.append(jQuery('<li></li>').text(user.login));
-    });
-
-    jQuery('#users').html(ul);
 });
 
 socket.on('newMessage', function(message){
@@ -61,8 +52,27 @@ jQuery('#message-form').on('submit', function(e){
 
     socket.emit('createMessage', {
         room_id: room_id,
-        text: messageTextbox.val()
+        text: messageTextbox.val(),
     }, function(){
         messageTextbox.val('');
     });
 });
+
+jQuery('#deleteRoom').on('click', function(){
+    var room_id = (window.location.pathname.split('/')).pop();
+    socket.emit('deleteAction', room_id);
+});
+
+socket.on('redirect', function(destination){
+    window.location.href = destination;
+});
+
+socket.on('getUserList', function(users){
+    var ol = jQuery('<ol></ol>');
+    users.forEach(function(user){
+        ol.append(`<li>${user.login}</a></li>`);
+    });
+    jQuery('#users').html(ol);
+});
+
+

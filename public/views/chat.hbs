@@ -6,6 +6,11 @@
     <title>Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <link rel="stylesheet" href="../css/style.css">
+     <style>
+        #deleteRoom{
+            margin-left: 80%;
+        }
+    </style>
 </head>
 <body class="chat">
 
@@ -19,16 +24,22 @@
             </ol>
         </div>
     </div>
-
     <div class="chat__main">
+        {{#if delete}}
+        <div>
+            <div id="deleteRoom">
+                <button id="{{chat_id}}">Delete this chat</button>
+            </div>
+        </div>
+        {{/if}}
         <ol id="messages" class="chat__messages">
             {{#each messages}}
             <li class="message">
             <div class="message__title">
-                <span>{{messages.text}}</span>
+                <span>{{createdAt}}</span>
             </div>
             <div class="message__body">
-                <p>{{messages.createdAt}}</p>
+                <p>{{text}}</p>
             </div>
         </li>
         {{/each}}

@@ -7,17 +7,13 @@ socket.on('disconnect', function(){
     console.log('Disconnected from server');
 });
 
-// socket.on('updateRoomList', .then(function(result){
-//         console.log(result);
+socket.on('updateChatList', function(rooms){
+    var ol = jQuery('<ol></ol>');
 
-// });
-
-    // var ul = jQuery('<ul></ul>');
-
-    // rooms.forEach(room => {
-    //     ul.append(jQuery('<li></li>').text(room.name));
-    // });
-
-    // jQuery('#rooms').html(ul);
+    rooms.forEach(function(room){
+        ol.append(`<li><a href="/chat/${room.id}">${room.name}</a></li>`);
+    });
+    jQuery('#rooms').html(ol);
+});
 
 

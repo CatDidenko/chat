@@ -7,19 +7,12 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     owner_id: DataTypes.INTEGER
-   }); //{
-  //   classMethods: {
-  //     associate: function(models) {
-  //      rooms.belongsTo(models.users, { foreignKey: 'owner_id'});
-  //      rooms.hasMany(models.messages, { foreignKey: 'room_id'});
-  //      rooms.belongsToMany(models.users, { through: 'UsersRooms'});
-  //     }
-  //   }
-  // });
+   }); 
+   
   rooms.associate = function(models){
-    rooms.belongsTo(models.users, { foreignKey: 'owner_id'});
-         rooms.hasMany(models.messages, { foreignKey: 'room_id'});
-        rooms.belongsToMany(models.users, { through: 'UsersRooms'});
+    rooms.belongsTo(models.users, { foreignKey: 'owner_id', onDelete:'cascade'});
+         rooms.hasMany(models.messages, { foreignKey: 'room_id', onDelete:'cascade'});
+        rooms.belongsToMany(models.users, { through: 'UsersRooms', as: 'People'});
   };
   return rooms;
 };

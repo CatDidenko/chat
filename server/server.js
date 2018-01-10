@@ -9,7 +9,6 @@ const {isRealString} = require('./utils/validation');
 const publicPath = path.join(__dirname, '/../public/');
 const port = process.env.PORT || 3000;
 
-//console.log(models.rooms.Sequelize.Association.BelongsToMany);
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
@@ -43,10 +42,13 @@ app.engine('hbs', exphbs({
     extname: '.hbs'
 }));
 app.set('view engine', '.hbs');
+
 models.sequelize.sync().then(function(){
+
 require(__dirname + '/../public/passport/passport')(passport, models.users);
 var authRoute = require(__dirname + '/../public/router/authrouter')(app, passport, models.rooms);
 var route = require(__dirname + '/../public/router/router')(app, models);
+
 io.use(sharedsession(session, {
     autoSave: true
 }));
@@ -55,54 +57,93 @@ io.on('connection', (socket)=>{
 
    socket.on('join', (room_id, callback) => {
         socket.join(room_id);
+
         var user_id = socket.handshake.session.user.id;
+        var login = socket.handshake.session.user.login;
+
+        socket.emit('newMessage', {text: 'Welcome to the chat app'});
+        
+        io.to(room_id).emit('newMessage', {text: `${login} has joined`});
+
         models.rooms.findById(room_id).then(function(room){
-            room.addUsers([user_id]);
+            room.addPeople([user_id]);
         });
-        //users.addUser(socket.id, params.name, params.room);
-        socket.emit('newMessage', {text: 'welcome to the chat app'});
-        console.log(socket.rooms);
-        //socket.broadcast.to(room_id).emit('newMessage', generateMessage('Admin', `${params.name} has joined`));
+        
         callback();
     });
 
     socket.on('createMessage', (message, callback) => {
 
-        //var user = users.getUser(socket.id);
+        var id = socket.handshake.session.user.id;
+
         if(isRealString(message.text)){
             io.to(message.room_id).emit('newMessage', {text: message.text});
+            models.messages.create({
+                text: message.text,
+                author_id: id,
+                room_id: message.room_id,
+            });
         }
-
-
         callback('This is from the server');
     });
 
-    socket.on('disconnect', () => {
-        models.users.findById(socket.handshake.session.user.id).then(function(user){
-          user.setChat([]);
-        })
+    socket.on('createChat', (name) => {
+
+        var id = socket.handshake.session.user.id;
+
+        models.rooms.create({
+            name: name,
+            owner_id: id
+        }).then(function(){
+            socket.emit('redirect', '/');
+        }).then(function(){
+            models.rooms.findAll().then(function(rooms){
+                io.emit('updateChatList', rooms);
+            });
+        });
     });
+
+    socket.on('deleteAction', (room_id) => {
+        models.rooms.destroy({
+            where: {
+                id: room_id
+            }
+        }).then(function(){
+            socket.emit('redirect', '/');
+        }).then(function(){
+            models.rooms.findAll().then(function(rooms){
+                io.emit('updateChatList', rooms);
+            });
+        });
+    });
+
+    socket.on('updateUserList', (room_id = '') => {
+        models.users.findAll({
+            include: [{
+                    model: models.rooms,
+                    as: 'Chat',
+                    where: {id: room_id} 
+                    
+            }]
+        }).then(function(users){
+            io.emit('getUserList', users);
+    });
+});
+
+    socket.on('disconnect', () => {
+        // io.emit('deleteFromChat');
+        // io.emit('updateUserList');
+
+        models.users.findById(socket.handshake.session.user.id).then(function(user){
+            io.emit('newMessage', {text: `User ${user.login} leave chat`});
+            user.setChat([]);
+        });
+    }); 
+            
+
  });
 
 server.listen(port);
 }).catch(function(error){
 
 });
-
-function getUserList(){
-    var people = [];
-    models.users.findAll({
-        include: [{
-             model: models.rooms,
-             as: 'Chat',
-            where: {id: 2}  
-        }]
-    }).then(function(users){
-        people.push.users;
-        //console.log(users);
-      //socket.emit('updateUserList', users);
-    });
-    return people;
-}
-
-console.log(getUserList());
